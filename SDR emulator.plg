@@ -1,0 +1,90 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: SDR emulator - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x410 /fo"Release/SDR emulator.res" /d "NDEBUG" /d "_AFXDLL" "C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.rc"" 
+Creating temporary file "C:\Users\dario\AppData\Local\Temp\RSP5056.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/SDR emulator.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\ChildFrm.cpp"
+"C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\Fourier.cpp"
+"C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\MainFrm.cpp"
+"C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp"
+"C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulatorDoc.cpp"
+"C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulatorView.cpp"
+]
+Creating command line "cl.exe @C:\Users\dario\AppData\Local\Temp\RSP5056.tmp" 
+Creating temporary file "C:\Users\dario\AppData\Local\Temp\RSP5057.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/SDR emulator.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\Users\dario\AppData\Local\Temp\RSP5057.tmp" 
+Creating temporary file "C:\Users\dario\AppData\Local\Temp\RSP5058.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:no /pdb:"Release/SDR emulator.pdb" /machine:I386 /out:"Release/SDR emulator.exe" 
+".\Release\ChildFrm.obj"
+".\Release\Fourier.obj"
+".\Release\MainFrm.obj"
+".\Release\SDR emulator.obj"
+".\Release\SDR emulatorDoc.obj"
+".\Release\SDR emulatorView.obj"
+".\Release\StdAfx.obj"
+".\Release\SDR emulator.res"
+]
+Creating command line "link.exe @C:\Users\dario\AppData\Local\Temp\RSP5058.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+ChildFrm.cpp
+Fourier.cpp
+MainFrm.cpp
+SDR emulator.cpp
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(265) : warning C4018: '<' : signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(266) : warning C4244: '=' : conversion from 'double' to 'unsigned short', possible loss of data
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(329) : warning C4018: '<' : signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(330) : warning C4244: '=' : conversion from 'double' to 'unsigned short', possible loss of data
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(420) : warning C4018: '<' : signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(423) : warning C4018: '<' : signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(414) : warning C4101: 'hz' : unreferenced local variable
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(413) : warning C4101: 'iy' : unreferenced local variable
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(414) : warning C4101: 'x' : unreferenced local variable
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(531) : warning C4018: '<' : signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(534) : warning C4018: '<' : signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(522) : warning C4101: 'hz' : unreferenced local variable
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(526) : warning C4101: 'myBuf' : unreferenced local variable
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(521) : warning C4101: 'iy' : unreferenced local variable
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(522) : warning C4101: 'x' : unreferenced local variable
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(525) : warning C4101: 'hf' : unreferenced local variable
+SDR emulatorDoc.cpp
+SDR emulatorView.cpp
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulatorView.cpp(129) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulatorView.cpp(143) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulatorView.cpp(330) : warning C4244: '=' : conversion from 'double' to 'unsigned short', possible loss of data
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulatorView.cpp(415) : warning C4101: 'p' : unreferenced local variable
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulatorView.cpp(414) : warning C4101: 'h' : unreferenced local variable
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulatorView.cpp(412) : warning C4101: 'l' : unreferenced local variable
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulatorView.cpp(548) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulatorView.cpp(562) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulatorView.cpp(511) : warning C4101: 'p' : unreferenced local variable
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulatorView.cpp(505) : warning C4101: 'i' : unreferenced local variable
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulatorView.cpp(740) : warning C4101: 'p' : unreferenced local variable
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulatorView.cpp(739) : warning C4101: 'h' : unreferenced local variable
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulatorView.cpp(737) : warning C4101: 'l' : unreferenced local variable
+Generating Code...
+C:\Program Files\Microsoft Visual Studio\Vc98\source\SDR emulator\SDR emulator.cpp(407) : warning C4715: 'CSDRemulatorApp::initFFT' : not all control paths return a value
+Linking...
+
+
+
+<h3>Results</h3>
+SDR emulator.exe - 0 error(s), 30 warning(s)
+</pre>
+</body>
+</html>
