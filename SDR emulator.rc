@@ -132,12 +132,13 @@ IDR_SDREMUTYPE MENU PRELOAD DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&Nuova forma d'onda\tCtrl+N", ID_FILE_NEW
-        MENUITEM "Nuona FFT",                   ID_FILE_NUONAFFT
+        MENUITEM "&Nuova forma d'onda\tCtrl+N", ID_FILE_NUOVAFORMADONDA
+        MENUITEM "Nuova FFT",                   ID_FILE_NUOVAFFT
         MENUITEM "&Apri...\tCtrl+A",            ID_FILE_OPEN
         MENUITEM "&Chiudi",                     ID_FILE_CLOSE
         MENUITEM "&Salva\tCtrl+S",              ID_FILE_SAVE
         MENUITEM "Sa&lva con nome...",          ID_FILE_SAVE_AS
+        MENUITEM "Salva dati con nome...",      ID_FILE_SAVE_AS
         MENUITEM SEPARATOR
         MENUITEM "Stam&pa...\tCtrl+P",          ID_FILE_PRINT
         MENUITEM "Antepri&ma di stampa",        ID_FILE_PRINT_PREVIEW
@@ -162,13 +163,15 @@ BEGIN
         MENUITEM "Portante modulata + oscillatore locale\t3", 
                                                 ID_PROVE_PORTANTEMODULATAOSCILLATORELOCALE
 
+        MENUITEM "Mix filtrata\t6",             ID_PROVE_MIXFILTRATA
         MENUITEM "FFT su portante \t4",         ID_PROVE_FFTSUPORTANTE
         MENUITEM "FFT su mix\t5",               ID_PROVE_FFTSUMIX
-        MENUITEM "Mix filtrata\t6",             ID_PROVE_MIXFILTRATA
         MENUITEM SEPARATOR
         MENUITEM "Modulazione AM\tA",           ID_PROVE_MODULAZIONEAM
         MENUITEM "Modulazione FM\tF",           ID_PROVE_MODULAZIONEFM
         MENUITEM "Modulazione SSB\tS",          ID_PROVE_MODULAZIONESSB
+        MENUITEM SEPARATOR
+        MENUITEM "Parameters...\tCTRL+T",       ID_PROVE_PARAMETERS
     END
     POPUP "&Visualizza"
     BEGIN
@@ -216,6 +219,7 @@ BEGIN
     "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
     "S",            ID_PROVE_MODULAZIONESSB, VIRTKEY, NOINVERT
     "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "T",            ID_PROVE_PARAMETERS,    VIRTKEY, CONTROL, NOINVERT
     "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
     VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
     VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
@@ -244,6 +248,28 @@ BEGIN
     LTEXT           "Copyright (C) 2022 Dario's Automation",IDC_STATIC,40,25,
                     261,8
     DEFPUSHBUTTON   "OK",IDOK,314,7,50,14,WS_GROUP
+END
+
+IDD_PARAMETERS DIALOG DISCARDABLE  0, 0, 280, 177
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Parameters"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Sampling Frequency:",IDC_STATIC,7,17,72,9
+    EDITTEXT        IDC_EDIT1,81,16,56,11,ES_AUTOHSCROLL
+    LTEXT           "Carrier Frequency:",IDC_STATIC,7,33,60,9
+    EDITTEXT        IDC_EDIT2,81,32,56,11,ES_AUTOHSCROLL
+    LTEXT           "Modulation Frequency:",IDC_STATIC,7,49,72,9
+    EDITTEXT        IDC_EDIT3,81,48,56,11,ES_AUTOHSCROLL
+    LTEXT           "Modulation Type:",IDC_STATIC,7,65,59,9
+    CONTROL         "None",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,79,65,34,9
+    CONTROL         "AM",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,119,65,28,9
+    CONTROL         "FM",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,150,65,28,9
+    CONTROL         "SSB",IDC_RADIO4,"Button",BS_AUTORADIOBUTTON,179,65,28,9
+    LTEXT           "Local Osc (tuning) Frequency:",IDC_STATIC,7,82,98,9
+    EDITTEXT        IDC_EDIT4,108,80,56,11,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,84,156,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,145,156,50,14
 END
 
 
@@ -307,6 +333,14 @@ BEGIN
         RIGHTMARGIN, 364
         TOPMARGIN, 7
         BOTTOMMARGIN, 48
+    END
+
+    IDD_PARAMETERS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 273
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 170
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -436,6 +470,16 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     AFX_IDS_PREVIEW_CLOSE   "Chiude la modalità anteprima di stampa\n Annulla anteprima"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_FILE_NUOVAFORMADONDA "Crea una nuova forma d'onda"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_FILE_NUOVAFFT        "Crea una nuova FFT"
 END
 
 #endif    // Italian (Italy) resources

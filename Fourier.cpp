@@ -206,6 +206,19 @@ DWORD CFFT::Frequency_from_bin(unsigned int p_nBaseFreq, unsigned int fft_len, u
 	return (p_nBaseFreq/fft_len)*p_nIndex;
 	}
 
+DWORD CFFT::binToFrequency(unsigned int p_nBaseFreq,unsigned int fftLength,int bin) {
+	DWORD binBandwidth=p_nBaseFreq/(fftLength);		//VERIFICARE!!
+
+	long freq = 0;
+	if(bin < fftLength/2) {
+		freq = (long)(bin*binBandwidth);
+		} 
+	else {
+		freq = (long)( -1* (fftLength-bin)*binBandwidth);
+		}
+	return freq;
+	}
+
 
 // https://www.g0kla.com/sdr/tutorials/sdr_tutorial5.php
 double *CFFTWindow::initBlackmanWindow(int len) {
@@ -272,6 +285,43 @@ CFirFilter::CFirFilter() {
 	xv = new double[sizeof(coeffs32)/sizeof(double)];		// il max possibile!
 	}
 
+double *CFirFilter::initRaiseCosine(double sampleRate, double freq, double alpha, int len) {
+	int M = len-1;
+	double *coeffs = new double[len];
+	double Fc = freq/sampleRate;
+	int i;
+	
+
+	// VERIFICARE !
+	double sumofsquares = 0;
+	double *tempCoeffs = new double[len];
+	int limit = (int)(0.5 / (alpha * Fc));
+	for(i=0; i <= M; i++) {
+		double sinc = (sin(2 * PI * Fc * (i - M/2)))/ (i - M/2);
+		double cosc = cos(alpha * PI * Fc * (i - M/2)) / ( 1 - (pow((2 * alpha * Fc * (i - M/2)),2)));
+		
+		if(i == M/2) {
+			tempCoeffs[i] = 2 * PI * Fc * cosc;
+			} 
+		else {
+			tempCoeffs[i] = sinc * cosc;
+			}
+		
+		// Care because ( 1 - ( 2 * pow((alpha * Fc * (i - M/2)),2))) is zero for 
+		if((i-M/2) == limit || (i-M/2) == -limit) {
+			tempCoeffs[i] = 0.25 * PI * sinc;
+			} 
+		
+		sumofsquares += tempCoeffs[i]*tempCoeffs[i];
+		}
+	double gain = sqrt(sumofsquares);
+	for(i=0; i < len; i++) {
+		coeffs[i] = tempCoeffs[len-i-1]/gain;
+		//System.out.println(coeffs[i]);
+		}
+	return coeffs;
+	}
+	
 CFirFilter::~CFirFilter() {
 
 	delete[] xv;

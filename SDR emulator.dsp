@@ -118,6 +118,10 @@ SOURCE=".\SDR emulatorView.cpp"
 # End Source File
 # Begin Source File
 
+SOURCE=.\SDRdialogs.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
@@ -152,6 +156,10 @@ SOURCE=".\SDR emulatorDoc.h"
 # Begin Source File
 
 SOURCE=".\SDR emulatorView.h"
+# End Source File
+# Begin Source File
+
+SOURCE=.\SDRdialogs.h
 # End Source File
 # Begin Source File
 

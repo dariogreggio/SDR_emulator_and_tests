@@ -19,6 +19,9 @@
 // See SDR emulator.cpp for the implementation of this class
 //
 
+class CSDRemulatorDoc;
+class CSDRemulatorDoc2;
+
 #include "fourier.h"
 
 #define NUM_SAMPLES 8
@@ -34,14 +37,17 @@
 //#define MAX_FREQ 44100
 #define MAX_ZTABLE 500
 #define FREQUENCY 1000000UL //1010000UL
-#define SAMPLING_FREQUENCY 32000000UL		// a 8 samples per ciclo posso fare al max 4MHz
+#define SAMPLING_FREQUENCY 8000000UL		// [a 8 samples per ciclo posso(potevo, v. pc_pic) fare al max 4MHz]
 #define SAMPLE_ACCU 5
 
 
 class CSDRemulatorApp : public CWinApp {
 public:
+	CSDRemulatorDoc *theWave;
+	CSDRemulatorDoc2 *theFFT;
+
 	WORD theSamples[THE_SAMPLES_SIZE+1];
-	DWORD Frequency,Modulation;
+	DWORD Frequency,Modulation,Tune;
 	BYTE ModulationType,ModulationRatio;
 	BYTE TipoVis;
 	BYTE TheZoom;
@@ -64,6 +70,7 @@ public:
 	inline double CSDRemulatorApp::GetFrequencyIntensity(double re, double im);
 
 	CSDRemulatorApp();
+	~CSDRemulatorApp();
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -75,8 +82,13 @@ public:
 // Implementation
 	//{{AFX_MSG(CSDRemulatorApp)
 	afx_msg void OnAppAbout();
-		// NOTE - the ClassWizard will add and remove member functions here.
-		//    DO NOT EDIT what you see in these blocks of generated code !
+	afx_msg void OnProveParameters();
+	afx_msg void OnFileNew();
+	afx_msg void OnUpdateFileNew(CCmdUI* pCmdUI);
+	afx_msg void OnFileNuovaformadonda();
+	afx_msg void OnUpdateFileNuovaformadonda(CCmdUI* pCmdUI);
+	afx_msg void OnFileNuovafft();
+	afx_msg void OnUpdateFileNuovafft(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
@@ -84,48 +96,53 @@ public:
 extern CSDRemulatorApp theApp;
 
 
-class COscillator {
+class COscillator {			// dovrebbe essere solo "virtual"...
 public:
 	enum {
 		TABLE_SIZE = 128
-	};
+		};
 public:
 	double *sinTable;
-	int samplesPerSecond;
+	DWORD samplesPerSecond;
 	double frequency;
 	double phase;
 	double phaseIncrement;
 	
 	COscillator();
-	COscillator(int samples, int freq);
+	COscillator(DWORD samples, int freq);
 	~COscillator();
+	void setFrequency(double freq);
+	void setModulation(double freq,BYTE mode);
+	double nextSample();
+	int CreateWave(WORD *buffer,DWORD bufSize);
 
 	};
 
 class CSinOscillator : public COscillator {
 public:
-
-	CSinOscillator(int samples, int freq);
+	CSinOscillator(DWORD samples, int freq);
 	};
 
 class CCosOscillator : public COscillator {
 public:
-
-	CCosOscillator(int samples, int freq);
+	CCosOscillator(DWORD samples, int freq);
 	};
 
 class CComplexOscillator {
 public:
-	CCosOscillator cosOsc;
-	CSinOscillator sinOsc;
+	CCosOscillator *cosOsc;
+	CSinOscillator *sinOsc;
 	
 public:
+	CComplexOscillator();
 	CComplexOscillator(int samples, int freq);
+	~CComplexOscillator();
 	
 	void setFrequency(double freq);
 	
 	Complex nextSample();
-};
+	};
+
 
 /////////////////////////////////////////////////////////////////////////////
 

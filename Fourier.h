@@ -36,6 +36,7 @@ public:
 ///////////////////////////
 
 #define FFT_LEN 16384
+#define FFT_LEN_BF_REDUCED 16
 #define mag_sqrd(re,im) (re*re+im*im)
 #define Decibels(re,im) ((re == 0 && im == 0) ? (0) : 10.0 * log10(double(mag_sqrd(re,im))))
 #define Amplitude(re,im,len) (GetFrequencyIntensity(re,im)/(len))
@@ -54,6 +55,7 @@ public:
 	unsigned int ReverseBits(unsigned int p_nIndex, unsigned int p_nBits);
 	double Index_to_frequency(unsigned int p_nBaseFreq, unsigned int p_nSamples, unsigned int p_nIndex);
 	DWORD Frequency_from_bin(unsigned int p_nBaseFreq, unsigned int fft_len, unsigned int p_nIndex);
+	DWORD binToFrequency(unsigned int p_nBaseFreq,unsigned int fft_len,int bin);
 
 public:
 	double *fin,*fout,*foutimg,*fdraw;
@@ -84,6 +86,7 @@ public:
 public:
 	CFirFilter();
 	~CFirFilter();
+	static double *initRaiseCosine(double sampleRate, double freq, double alpha, int len);
 	double filter6(double in);
 	double filter32(double in);
 	};

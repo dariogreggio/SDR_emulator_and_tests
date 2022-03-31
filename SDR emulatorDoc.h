@@ -20,6 +20,7 @@ public:
 
 // Operations
 public:
+	CView *getView() { POSITION pos=GetFirstViewPosition(); return GetNextView(pos); }
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -60,6 +61,7 @@ public:
 
 // Operations
 public:
+	CView *getView() { POSITION pos=GetFirstViewPosition(); return GetNextView(pos); }
 
 // Overrides
 	// ClassWizard generated virtual function overrides

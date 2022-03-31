@@ -25,44 +25,37 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-static UINT indicators[] =
-{
+static UINT indicators[] = {
 	ID_SEPARATOR,           // status line indicator
-	ID_INDICATOR_CAPS,
 	ID_INDICATOR_NUM,
 	ID_INDICATOR_SCRL,
-};
+	};
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame construction/destruction
 
-CMainFrame::CMainFrame()
-{
+CMainFrame::CMainFrame() {
 	// TODO: add member initialization code here
 	
-}
+	}
 
-CMainFrame::~CMainFrame()
-{
-}
+CMainFrame::~CMainFrame() {
+	}
 
-int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
-{
+int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 	if (CMDIFrameWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
 	if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP
 		| CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
-		!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
-	{
+		!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))	{
 		TRACE0("Failed to create toolbar\n");
 		return -1;      // fail to create
 	}
 
 	if (!m_wndStatusBar.Create(this) ||
 		!m_wndStatusBar.SetIndicators(indicators,
-		  sizeof(indicators)/sizeof(UINT)))
-	{
+		  sizeof(indicators)/sizeof(UINT)))	{
 		TRACE0("Failed to create status bar\n");
 		return -1;      // fail to create
 	}
@@ -74,17 +67,21 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	DockControlBar(&m_wndToolBar);
 
 	return 0;
-}
+	}
 
-BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
-{
+BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
+
+	cs.cx=1240;
+	cs.cy=808;
+	cs.style &= ~FWS_ADDTOTITLE;
+
+
 	if( !CMDIFrameWnd::PreCreateWindow(cs) )
 		return FALSE;
-	// TODO: Modify the Window class or styles here by modifying
-	//  the CREATESTRUCT cs
+	// TODO: Modify the Window class or styles here by modifying the CREATESTRUCT cs
 
 	return TRUE;
-}
+	}
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame diagnostics

@@ -48,17 +48,19 @@ END_MESSAGE_MAP()
 CSDRemulatorView::CSDRemulatorView() {
 	// TODO: add construction code here
 
-}
+	}
 
 CSDRemulatorView::~CSDRemulatorView() {
-}
+	}
 
 BOOL CSDRemulatorView::PreCreateWindow(CREATESTRUCT& cs) {
-	// TODO: Modify the Window class or styles here by modifying
-	//  the CREATESTRUCT cs
+
+	cs.cx=1250;			// se ne frega... v. doc
+
+	cs.lpszName="Wave";	// idem...
 
 	return CView::PreCreateWindow(cs);
-}
+	}
 
 /////////////////////////////////////////////////////////////////////////////
 // CSDRemulatorView drawing
@@ -82,6 +84,10 @@ void CSDRemulatorView::OnDraw(CDC* pDC) {
 	Pen2.CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
 	Pen3.CreatePen(PS_SOLID, 1, RGB(220, 220, 228));
 
+	myFont.CreateFont(12,0,0,0,300,0,0,0,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH | FF_SWISS,"arial");
+
+	oldFont=(CFont *)pDC->SelectObject(myFont);
+
 	oldPen=(CPen *)pDC->SelectObject(Pen3);
 	switch(theApp.TipoVis) {
 		case 0:
@@ -96,6 +102,7 @@ void CSDRemulatorView::OnDraw(CDC* pDC) {
 			break;
 		case 1:
 		case 2:
+		case 3:
 			for(x=0; x<rc.right; x+=20) {
 				pDC->MoveTo(x,0);
 				pDC->LineTo(x,rc.bottom);
@@ -146,10 +153,21 @@ void CSDRemulatorView::OnDraw(CDC* pDC) {
 				pDC->LineTo(x,y1);
 				}
 			break;
+		case 3:
+			pDC->SelectObject(Pen2);
+			ymax=1;
+			for(x=0; x<FFT_LEN/4/FFT_LEN_BF_REDUCED; x++) {
+				ymax=max(theApp.fdraw[x],ymax);
+				}
+			ymax=1.1*ymax;
+			for(x=0; x<FFT_LEN/4/FFT_LEN_BF_REDUCED; x++) {
+				y1=(rc.bottom)-(((theApp.fdraw[x])*rc.bottom)/(ymax));
+				
+				pDC->MoveTo(x*FFT_LEN_BF_REDUCED,rc.bottom);
+				pDC->LineTo(x*FFT_LEN_BF_REDUCED,y1);
+				}
+			break;
 		}
-
-	myFont.CreateFont(12,0,0,0,300,0,0,0,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,DEFAULT_PITCH | FF_SWISS,"arial");
-	oldFont=(CFont *)pDC->SelectObject(&myFont);
 
 	switch(theApp.TipoVis) {
 		case 0:
@@ -160,20 +178,57 @@ void CSDRemulatorView::OnDraw(CDC* pDC) {
 			else
 				S.Format("F: %uHz; %u samples",theApp.Frequency,NUM_SAMPLES);
 			pDC->TextOut(5,15,S);
-			pDC->SelectObject(oldFont);
 			break;
 		case 1:
 		case 2:
-			S.Format("FFT: %u",rc.right);
+			S.Format("FFT: %u-%uHz",0,4000000);
 			pDC->TextOut(5,5,S);
-			S.Format("F: %uHz; %u samples",theApp.Frequency,NUM_SAMPLES);
+			S.Format("%u FFT bins",FFT_LEN);
+			pDC->TextOut(5,15,S);
+			S.Format("Vmax=%u",(int)ymax);
+			pDC->TextOut(5,25,S);
+			break;
+		case 3:
+			S.Format("FFT: %u-%uHz",0,4000000/FFT_LEN_BF_REDUCED);
+			pDC->TextOut(5,5,S);
+			S.Format("%u FFT bins",FFT_LEN/FFT_LEN_BF_REDUCED);
 			pDC->TextOut(5,15,S);
 			S.Format("Vmax=%u",(int)ymax);
 			pDC->TextOut(5,25,S);
 			break;
 		}
 
-	myFont.DeleteObject();
+	switch(theApp.TipoVis) {
+		case 0:
+			for(x=0; x<rc.right; x+=NUM_SAMPLES) {
+				if(!(x % 128)) {
+					S.Format("%u",x);
+					pDC->TextOut(x-2,rc.bottom-10,S);
+					}
+				}
+			break;
+		case 1:
+		case 2:
+			for(x=0; x<rc.right; x+=20) {
+				if(x && !(x % 100)) {
+					S.Format("%uKHz",theApp.m_FFT->binToFrequency(SAMPLING_FREQUENCY,FFT_LEN/2,x-2)/1000);
+					pDC->TextOut(x-10,rc.bottom-10,S);
+					}
+				}
+			break;
+		case 3:
+			for(x=0; x<rc.right; x+=20) {
+				if(x && !(x % 100)) {
+					S.Format("%uKHz",
+						theApp.m_FFT->binToFrequency(SAMPLING_FREQUENCY/FFT_LEN_BF_REDUCED,FFT_LEN/2/FFT_LEN_BF_REDUCED,(x-2)/FFT_LEN_BF_REDUCED)/1000);
+					pDC->TextOut(x-10,rc.bottom-10,S);
+					}
+				}
+			break;
+		}
+
+//	pDC->SelectObject(oldFont);
+//	myFont.DeleteObject();
 
 	pDC->SelectObject(oldPen);
 
@@ -222,40 +277,15 @@ CSDRemulatorDoc* CSDRemulatorView::GetDocument() // non-debug version is inline
 
 void CSDRemulatorView::OnProvePortante() {
 
-	theApp.CreateWave(theApp.theSamples,THE_SAMPLES_SIZE,FREQUENCY,SAMPLING_FREQUENCY);
+	theApp.CreateWave(theApp.theSamples,THE_SAMPLES_SIZE,theApp.Frequency,SAMPLING_FREQUENCY);
 	theApp.TipoVis=0;
 	Invalidate();
 	}
 
 
-void CSDRemulatorView::OnProveFftsumix() {
-
-	double fin[FFT_LEN/2],fout[FFT_LEN],foutimg[FFT_LEN];
-	for(DWORD dw=0; dw<FFT_LEN/2; dw++) {
-		//copy audio signal to fft real component for left channel
-		fin[dw] = (double)(int)theApp.theSamples[dw] -0x8000;
-		}
-	//Perform FFT on left channel
-	theApp.m_FFT->fft_double(FFT_LEN/2,0,fin,NULL,fout,foutimg);
-	float re,im;
-	for(int i=1; i < FFT_LEN/4; i++) { //Use FFT_LEN/4 since the data is mirrored within the array.
-		re = (float)fout[i];
-		im = (float)foutimg[i];
-		//get amplitude and scale to 0..256 range
-		//fdraw[i]=AmplitudeScaled(re,im,FFT_LEN/2,256);
-		theApp.fdraw[i] = ((int)sqrt(mag_sqrd(re,im))) /5000; //% 256;
-		}
-
-
-	theApp.ComputeMatFFT2(FREQUENCY,sizeof(theApp.theSamples)/sizeof(WORD),theApp.theSamples,theApp.nn1,0,
-		theApp.BFSpectrumTable,BF_SPECTRUM_ACCU);
-	theApp.TipoVis=1;
-	Invalidate();
-	}
-
 void CSDRemulatorView::OnProveFftsuportante() {
-
 	double fin[FFT_LEN/2],fout[FFT_LEN],foutimg[FFT_LEN];
+
 	for(DWORD dw=0; dw<FFT_LEN/2; dw++) {
 		//copy audio signal to fft real component for left channel
 		fin[dw] = (double)(int)theApp.theSamples[dw] -0x8000;
@@ -272,43 +302,127 @@ void CSDRemulatorView::OnProveFftsuportante() {
 		}
 	
 
-	theApp.ComputeMatFFT2(FREQUENCY,sizeof(theApp.theSamples)/sizeof(WORD),theApp.theSamples,theApp.nn1,0,
-		theApp.RFSpectrumTable,RF_SPECTRUM_ACCU);
+//	theApp.ComputeMatFFT2(FREQUENCY,sizeof(theApp.theSamples)/sizeof(WORD),theApp.theSamples,theApp.nn1,0,
+//		theApp.RFSpectrumTable,RF_SPECTRUM_ACCU);
 	theApp.TipoVis=2;
 	Invalidate();
 	}
 
+void CSDRemulatorView::OnProveFftsumix() {
+	double fin[FFT_LEN/2/FFT_LEN_BF_REDUCED],fout[FFT_LEN/FFT_LEN_BF_REDUCED],foutimg[FFT_LEN/FFT_LEN_BF_REDUCED];
+	int decimate;
+	double m;
+
+	decimate=0; m=0;
+	for(DWORD dw=0; dw<FFT_LEN/2; dw++) {
+		//copy audio signal to fft real component for left channel
+		m += (double)(int)theApp.theSamples[dw] -0x8000;
+		decimate++;
+		if(decimate==FFT_LEN_BF_REDUCED) {
+			fin[dw/FFT_LEN_BF_REDUCED] = (double)((m/FFT_LEN_BF_REDUCED) );
+			decimate=0; m=0;
+			}
+		}
+	//Perform FFT on left channel
+	theApp.m_FFT->fft_double(FFT_LEN/2/FFT_LEN_BF_REDUCED,0,fin,NULL,fout,foutimg);
+	float re,im;
+	for(int i=1; i < FFT_LEN/4/FFT_LEN_BF_REDUCED; i++) {		// voglio 50-100KHz circa...
+		re = (float)fout[i];
+		im = (float)foutimg[i];
+		//get amplitude and scale to 0..256 range
+		//fdraw[i]=AmplitudeScaled(re,im,FFT_LEN/2,256);
+		theApp.fdraw[i] = ((int)sqrt(mag_sqrd(re,im))) /5000; //% 256;
+		}
+
+
+//	theApp.ComputeMatFFT2(FREQUENCY,sizeof(theApp.theSamples)/sizeof(WORD),theApp.theSamples,theApp.nn1,0,
+//		theApp.BFSpectrumTable,BF_SPECTRUM_ACCU);
+	theApp.TipoVis=3;
+	Invalidate();
+	}
+
 void CSDRemulatorView::OnProveMixfiltrata() {
+	double IQbuffer[2],IQbuffer2[2];
+	int i;
+	Complex c;
+	CFirFilter audioLowPass;
 	
+	
+	CSinOscillator myOsc(SAMPLING_FREQUENCY,theApp.Frequency);
+	CComplexOscillator *localOsc = new CComplexOscillator(SAMPLING_FREQUENCY, /* - */ theApp.Tune);
+
+	for(i=0; i<sizeof(theApp.theSamples)/sizeof(WORD) /2; i++) {
+
+		c=localOsc->nextSample();
+		IQbuffer[0]=myOsc.nextSample();
+		IQbuffer[1]=0;
+
+
+// https://github.com/ac2cz/SDR/blob/master/src/tutorial5/OscTest2.java
+		IQbuffer2[0] = IQbuffer[0]*c.geti() + IQbuffer[1]*c.getq();
+		IQbuffer2[1] = IQbuffer[1]*c.geti() - IQbuffer[0]*c.getq();
+
+		double audio = IQbuffer2[0] + IQbuffer2[1];
+
+//			double fil = audioLowPass.filter6(audio);
+			double fil = audioLowPass.filter32(audio);
+		if(i>=32)		// il filtro si deve riempire...
+			theApp.theSamples[i-32]= (fil*0x7fff) + 0x8000;
+		}
+
+	delete localOsc;
+
 	theApp.TipoVis=0;
 	Invalidate();
 	}
 
 void CSDRemulatorView::OnProvePortantemodulata() {
 
-	theApp.CreateWave(theApp.theSamples,THE_SAMPLES_SIZE,FREQUENCY,SAMPLING_FREQUENCY,5000,theApp.ModulationType);
+	theApp.CreateWave(theApp.theSamples,THE_SAMPLES_SIZE,FREQUENCY,SAMPLING_FREQUENCY,
+		theApp.Modulation,theApp.ModulationType);
 	theApp.TipoVis=0;
 	Invalidate();
 	}
 
 void CSDRemulatorView::OnProvePortantemodulataoscillatorelocale() {
-	WORD *buffer;
+	double IQbuffer[2],IQbuffer2[2];
 	int i;
-	
-//	theApp.CreateWave(theApp.theSamples,THE_SAMPLES_SIZE,FREQUENCY,SAMPLING_FREQUENCY,50000,theApp.ModulationType);
-	theApp.CreateWave(theApp.theSamples,THE_SAMPLES_SIZE,FREQUENCY,SAMPLING_FREQUENCY);
+	Complex c;
+	CFirFilter audioLowPass;
 
-	buffer=new WORD[THE_SAMPLES_SIZE];
-	theApp.CreateWave(buffer,THE_SAMPLES_SIZE,10000UL,SAMPLING_FREQUENCY);
-	for(i=0; i<sizeof(theApp.theSamples)/sizeof(WORD); i++) {
-		theApp.theSamples[i]=(((((int)theApp.theSamples[i])-0x8000) + (((int)buffer[i])-0x8000)/2)/2)+0x8000;
+	
+//	theApp.CreateWave(theApp.theSamples,THE_SAMPLES_SIZE,FREQUENCY,SAMPLING_FREQUENCY,theApp.Modulation,theApp.ModulationType);
+//	theApp.CreateWave(theApp.theSamples,THE_SAMPLES_SIZE,FREQUENCY,SAMPLING_FREQUENCY);
+
+//	theApp.CreateWave(IQbuffer,THE_SAMPLES_SIZE,FREQUENCY,SAMPLING_FREQUENCY);
+
+	
+	CSinOscillator myOsc(SAMPLING_FREQUENCY,theApp.Frequency);
+
+#pragma warning MANCA LA MODULAZIONE
+
+	CComplexOscillator localOsc(SAMPLING_FREQUENCY, /* - */ theApp.Tune);
+
+	for(i=0; i<sizeof(theApp.theSamples)/sizeof(WORD) /2; i++) {
+
+//		theApp.theSamples[i]=(((((int)theApp.theSamples[i])-0x8000) + (((int)buffer[i])-0x8000)/2)/2)+0x8000;
+
+		c=localOsc.nextSample();
+		IQbuffer[0]=myOsc.nextSample();
+		IQbuffer[1]=0;
+
 
 // https://github.com/ac2cz/SDR/blob/master/src/tutorial5/OscTest2.java
-			IQbuffer2[2*d] = IQbuffer[2*d]*c.geti() + IQbuffer[2*d+1]*c.getq();
-			IQbuffer2[2*d+1] = IQbuffer[2*d+1]*c.geti() - IQbuffer[2*d]*c.getq();
+		IQbuffer2[0] = IQbuffer[0]*c.geti() + IQbuffer[1]*c.getq();
+		IQbuffer2[1] = IQbuffer[1]*c.geti() - IQbuffer[0]*c.getq();
 
+		double audio = IQbuffer2[0] + IQbuffer2[1];
+//		double audio = IQbuffer[0];
+
+//			double fil = audioLowPass.filter6(audio);
+		double fil = audio;
+		theApp.theSamples[i]= (fil*0x7fff) + 0x8000;
 		}
-	delete []buffer;
 
 	theApp.TipoVis=0;
 	Invalidate();
@@ -366,15 +480,19 @@ void CSDRemulatorView::OnMouseMove(UINT nFlags, CPoint point) {
 	pDC->SetTextColor(RGB(0,0,255));
 	switch(theApp.TipoVis) {
 		case 0:
-			S.Format("X=%u",pt.x);
+			S.Format("t=%u",pt.x);
 			pDC->TextOut(200,5,S);
 			break;
 		case 1:
-			S.Format("%uHz",theApp.m_FFT->Frequency_from_bin(SAMPLING_FREQUENCY,FFT_LEN/2,(pt.x-10)/5));
+			S.Format("%uKHz",theApp.m_FFT->binToFrequency(SAMPLING_FREQUENCY,FFT_LEN/2,(pt.x-10)/5)/1000);
 			pDC->TextOut(200,5,S);
 			break;
 		case 2:
-			S.Format("%uHz",theApp.m_FFT->Frequency_from_bin(SAMPLING_FREQUENCY,FFT_LEN/2,pt.x -2 /* min ricevuto da mouse...*/));
+			S.Format("%uKHz",theApp.m_FFT->binToFrequency(SAMPLING_FREQUENCY,FFT_LEN/2,pt.x -2 /* min ricevuto da mouse...*/) /1000);
+			pDC->TextOut(200,5,S);
+			break;
+		case 3:
+			S.Format("%uHz",theApp.m_FFT->binToFrequency(SAMPLING_FREQUENCY/FFT_LEN_BF_REDUCED,FFT_LEN/2/FFT_LEN_BF_REDUCED,(pt.x -2 /* min ricevuto da mouse...*/)/FFT_LEN_BF_REDUCED) );
 			pDC->TextOut(200,5,S);
 			break;
 		}
@@ -695,11 +813,11 @@ void CSDRemulatorView2::OnMouseMove(UINT nFlags, CPoint point) {
 		case 0:
 			break;
 		case 1:
-			S.Format("%uHz",theApp.m_FFT->Frequency_from_bin(SAMPLING_FREQUENCY,FFT_LEN/2,(pt.x-10)/5));
+			S.Format("%uHz",theApp.m_FFT->binToFrequency(SAMPLING_FREQUENCY,FFT_LEN/2,(pt.x-10)/5));
 			pDC->TextOut(200,5,S);
 			break;
 		case 2:
-			S.Format("%uHz",theApp.m_FFT->Frequency_from_bin(SAMPLING_FREQUENCY,FFT_LEN/2,pt.x -2 /* min ricevuto da mouse...*/));
+			S.Format("%uKHz",theApp.m_FFT->binToFrequency(SAMPLING_FREQUENCY,FFT_LEN/2,pt.x -2 /* min ricevuto da mouse...*/) /1000);
 			pDC->TextOut(200,5,S);
 			break;
 		}
@@ -751,3 +869,22 @@ void CSDRemulatorView2::OnEditCopy() {
 	
 
   
+
+BOOL CSDRemulatorView2::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext) {
+	int i;
+
+	if(i=CWnd::Create(lpszClassName, lpszWindowName, dwStyle, rect, pParentWnd, nID, pContext)) {
+		GetParent()->SetWindowText("FFT");
+		}
+	return i;
+	}
+
+BOOL CSDRemulatorView::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext) {
+	int i;
+
+	if(i=CWnd::Create(lpszClassName, lpszWindowName, dwStyle, rect, pParentWnd, nID, pContext)) {
+		SetWindowText("Wave");
+		}
+	return i;
+	}
+	
