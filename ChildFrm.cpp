@@ -27,26 +27,29 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CChildFrame construction/destruction
 
-CChildFrame::CChildFrame()
-{
+CChildFrame::CChildFrame() {
 	// TODO: add member initialization code here
 	
 }
 
-CChildFrame::~CChildFrame()
-{
+CChildFrame::~CChildFrame() {
 }
 
-BOOL CChildFrame::PreCreateWindow(CREATESTRUCT& cs)
-{
+BOOL CChildFrame::PreCreateWindow(CREATESTRUCT& cs) {
 	// TODO: Modify the Window class or styles here by modifying
 	//  the CREATESTRUCT cs
+
+//	cs.lpszName="piciu";		// manco per caso
+//	cs.cy=100;
+	cs.style &= ~FWS_ADDTOTITLE;		// sparisce anche il nome oltre al numero £$%&, v. create di View
+	cs.style &= ~(WS_MINIMIZEBOX | WS_SYSMENU);
+
 
 	if( !CMDIChildWnd::PreCreateWindow(cs) )
 		return FALSE;
 
 	return TRUE;
-}
+	}
 
 
 

@@ -9,6 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <math.h>
+
 /*
  * fft.h
  *
@@ -29,7 +31,17 @@ public:
 	Complex(double r, double i) { re=r; im=i; }
 	double getq() { return re; }
 	double geti() { return im; }
-};
+	double hypot() { return sqrt(re*re+im*im); }
+	Complex operator+(Complex c2) { Complex ret; ret.re = re + c2.re; ret.im = im + c2.im; return ret; }
+	Complex operator-(Complex c2) { Complex ret; ret.re = re - c2.re; ret.im = im - c2.im; return ret; }
+	Complex operator+(double d) { Complex ret; ret.re = re + d; return ret; }
+	Complex operator-(double d) { Complex ret; ret.re = re - d; return ret; }
+	Complex operator*(Complex c) { double real1,real2; real1=re; real2=c.re; re=(re*c.re)-(im*c.im); \
+		/* if (a,b)(c,d) then formula of multiplication is (ac-bd,ad+bc) */ \
+		im=(real1*c.im)+(im*real2); Complex temp(re,im); return temp; }
+	Complex operator*(double d) { re=re*d; im=im*d; Complex temp(re,im); return temp; }
+	Complex operator++() { Complex x; x.re=++re; x.im=++im; return x; }
+	};
 
 ///////////////////////////
 //  function prototypes  //
@@ -37,7 +49,7 @@ public:
 
 #define FFT_LEN 16384
 #define FFT_LEN_BF_REDUCED 16
-#define mag_sqrd(re,im) (re*re+im*im)
+//#define mag_sqrd(re,im) (re*re+im*im)
 #define Decibels(re,im) ((re == 0 && im == 0) ? (0) : 10.0 * log10(double(mag_sqrd(re,im))))
 #define Amplitude(re,im,len) (GetFrequencyIntensity(re,im)/(len))
 #define AmplitudeScaled(re,im,len,scale) ((int)Amplitude(re,im,len)%scale)
@@ -53,6 +65,7 @@ public:
 	bool IsPowerOfTwo(unsigned int p_nX);
 	unsigned int NumberOfBitsNeeded(unsigned int p_nSamples);
 	unsigned int ReverseBits(unsigned int p_nIndex, unsigned int p_nBits);
+	unsigned int _fastcall CFFT::subMirror(unsigned int n);
 	double Index_to_frequency(unsigned int p_nBaseFreq, unsigned int p_nSamples, unsigned int p_nIndex);
 	DWORD Frequency_from_bin(unsigned int p_nBaseFreq, unsigned int fft_len, unsigned int p_nIndex);
 	DWORD binToFrequency(unsigned int p_nBaseFreq,unsigned int fft_len,int bin);
@@ -67,8 +80,6 @@ public:
 /////////////////////////////
 //  constants-definition  //
 /////////////////////////////
-
-#define  PI  (3.14159265358979323846)
 
 class CFFTWindow {
 

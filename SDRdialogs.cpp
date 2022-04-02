@@ -45,6 +45,7 @@ CParametersDlg::CParametersDlg(CWnd* pParent /*=NULL*/)
 	m_carrierFrequency = 0;
 	m_modulationFrequency = 0;
 	m_LocalOscFrequency = 0;
+	m_Filter = -1;
 	//}}AFX_DATA_INIT
 }
 
@@ -57,6 +58,7 @@ void CParametersDlg::DoDataExchange(CDataExchange* pDX) {
 	DDX_Text(pDX, IDC_EDIT2, m_carrierFrequency);
 	DDX_Text(pDX, IDC_EDIT3, m_modulationFrequency);
 	DDX_Text(pDX, IDC_EDIT4, m_LocalOscFrequency);
+	DDX_Radio(pDX, IDC_RADIO5, m_Filter);
 	//}}AFX_DATA_MAP
 }
 
@@ -76,6 +78,8 @@ BOOL CParametersDlg::OnInitDialog() {
 	m_carrierFrequency=theApp.Frequency;
 	m_modulationFrequency=theApp.Modulation;
 	m_LocalOscFrequency=theApp.Tune;
+	m_Filter=theApp.Filter;
+
 	
 	UpdateData(FALSE);
 

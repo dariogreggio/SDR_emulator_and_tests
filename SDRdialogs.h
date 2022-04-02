@@ -47,6 +47,7 @@ public:
 	UINT	m_carrierFrequency;
 	UINT	m_modulationFrequency;
 	UINT	m_LocalOscFrequency;
+	int		m_Filter;
 	//}}AFX_DATA
 
 

@@ -48,19 +48,11 @@ protected:
 // Generated message map functions
 protected:
 	//{{AFX_MSG(CSDRemulatorView)
-	afx_msg void OnProvePortante();
-	afx_msg void OnProveFftsumix();
-	afx_msg void OnProveFftsuportante();
-	afx_msg void OnProveMixfiltrata();
-	afx_msg void OnProvePortantemodulata();
-	afx_msg void OnProvePortantemodulataoscillatorelocale();
-	afx_msg void OnProveModulazioneam();
-	afx_msg void OnProveModulazionefm();
-	afx_msg void OnProveModulazionessb();
 	afx_msg void OnVisualizzaZoomin();
 	afx_msg void OnVisualizzaZoomout();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnEditCopy();
+	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
@@ -110,12 +102,11 @@ protected:
 // Generated message map functions
 protected:
 	//{{AFX_MSG(CSDRemulatorView2)
-	afx_msg void OnProveFftsumix();
-	afx_msg void OnProveFftsuportante();
 	afx_msg void OnVisualizzaZoomin();
 	afx_msg void OnVisualizzaZoomout();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnEditCopy();
+	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

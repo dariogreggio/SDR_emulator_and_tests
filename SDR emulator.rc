@@ -163,13 +163,16 @@ BEGIN
         MENUITEM "Portante modulata + oscillatore locale\t3", 
                                                 ID_PROVE_PORTANTEMODULATAOSCILLATORELOCALE
 
-        MENUITEM "Mix filtrata\t6",             ID_PROVE_MIXFILTRATA
-        MENUITEM "FFT su portante \t4",         ID_PROVE_FFTSUPORTANTE
-        MENUITEM "FFT su mix\t5",               ID_PROVE_FFTSUMIX
+        MENUITEM "Portante+osc filtrata\t4",    ID_PROVE_MIXFILTRATA
+        MENUITEM "Portante mod. + osc. locale filtrata\t5", 
+                                                ID_PROVE_PORTANTEMODULATAOSCILLATORELOCALE
+
         MENUITEM SEPARATOR
         MENUITEM "Modulazione AM\tA",           ID_PROVE_MODULAZIONEAM
         MENUITEM "Modulazione FM\tF",           ID_PROVE_MODULAZIONEFM
         MENUITEM "Modulazione SSB\tS",          ID_PROVE_MODULAZIONESSB
+        MENUITEM "Modulazione LSB\tL",          ID_PROVE_MODULAZIONELSB
+        MENUITEM "Modulazione USB\tU",          ID_PROVE_MODULAZIONEUSB
         MENUITEM SEPARATOR
         MENUITEM "Parameters...\tCTRL+T",       ID_PROVE_PARAMETERS
     END
@@ -183,10 +186,8 @@ BEGIN
     END
     POPUP "Fi&nestra"
     BEGIN
-        MENUITEM "&Nuova finestra",             ID_WINDOW_NEW
         MENUITEM "&Sovrapponi",                 ID_WINDOW_CASCADE
         MENUITEM "&Affianca",                   ID_WINDOW_TILE_HORZ
-        MENUITEM "&Disponi icone",              ID_WINDOW_ARRANGE
     END
     POPUP "&?"
     BEGIN
@@ -213,6 +214,7 @@ BEGIN
     "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
     "F",            ID_PROVE_MODULAZIONEFM, VIRTKEY, NOINVERT
     "I",            ID_VISUALIZZA_ZOOMIN,   VIRTKEY, NOINVERT
+    "L",            ID_PROVE_MODULAZIONELSB, VIRTKEY, NOINVERT
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_VISUALIZZA_ZOOMOUT,  VIRTKEY, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
@@ -220,6 +222,7 @@ BEGIN
     "S",            ID_PROVE_MODULAZIONESSB, VIRTKEY, NOINVERT
     "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
     "T",            ID_PROVE_PARAMETERS,    VIRTKEY, CONTROL, NOINVERT
+    "U",            ID_PROVE_MODULAZIONEUSB, VIRTKEY, NOINVERT
     "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
     VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
     VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
@@ -268,8 +271,17 @@ BEGIN
     CONTROL         "SSB",IDC_RADIO4,"Button",BS_AUTORADIOBUTTON,179,65,28,9
     LTEXT           "Local Osc (tuning) Frequency:",IDC_STATIC,7,82,98,9
     EDITTEXT        IDC_EDIT4,108,80,56,11,ES_AUTOHSCROLL
+    LTEXT           "Filter:",IDC_STATIC,7,99,22,9
+    CONTROL         "4 tap",IDC_RADIO5,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,34,99,28,10
+    CONTROL         "32 tap",IDC_RADIO6,"Button",BS_AUTORADIOBUTTON,69,99,34,
+                    10
+    CONTROL         "flex",IDC_RADIO7,"Button",BS_AUTORADIOBUTTON,111,99,34,
+                    10
     DEFPUSHBUTTON   "OK",IDOK,84,156,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,145,156,50,14
+    CONTROL         "LSB",IDC_RADIO8,"Button",BS_AUTORADIOBUTTON,211,65,28,9
+    CONTROL         "USB",IDC_RADIO9,"Button",BS_AUTORADIOBUTTON,245,65,28,9
 END
 
 
@@ -280,8 +292,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 1,0,1,0
+ PRODUCTVERSION 1,0,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -299,14 +311,14 @@ BEGIN
             VALUE "Comments", "Prove su SDR\0"
             VALUE "CompanyName", "Dario's Automation\0"
             VALUE "FileDescription", "SDR emulator Applicazione MFC\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "FileVersion", "1, 0, 1, 0\0"
             VALUE "InternalName", "SDR emulator\0"
             VALUE "LegalCopyright", "Copyright (C) 2022 Dario's Automation\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "SDR emulator.EXE\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "SDR emulator Applicazione\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "ProductVersion", "1, 0, 1, 0\0"
             VALUE "SpecialBuild", "\0"
         END
     END
@@ -354,7 +366,8 @@ END
 STRINGTABLE PRELOAD DISCARDABLE 
 BEGIN
     IDR_MAINFRAME           "SDR emulator"
-    IDR_SDREMUTYPE          "\nSDRemu\nSDRemu\n\n\nSDRemulator.Document\nSDRemu Document"
+    IDR_SDREMUTYPE          "\nWave\nSDRemu\n\n\nSDRemulator.Document\nSDRemu Wave"
+    IDR_SDREMUTYPE2         "\nFFT\nSDRemu2\n\n\nSDRemulator.Document\nSDRemu FFT"
 END
 
 STRINGTABLE PRELOAD DISCARDABLE 
@@ -402,14 +415,6 @@ BEGIN
     ID_FILE_MRU_FILE6       "Apre questo documento"
     ID_FILE_MRU_FILE7       "Apre questo documento"
     ID_FILE_MRU_FILE8       "Apre questo documento"
-    ID_FILE_MRU_FILE9       "Apre questo documento"
-    ID_FILE_MRU_FILE10      "Apre questo documento"
-    ID_FILE_MRU_FILE11      "Apre questo documento"
-    ID_FILE_MRU_FILE12      "Apre questo documento"
-    ID_FILE_MRU_FILE13      "Apre questo documento"
-    ID_FILE_MRU_FILE14      "Apre questo documento"
-    ID_FILE_MRU_FILE15      "Apre questo documento"
-    ID_FILE_MRU_FILE16      "Apre questo documento"
 END
 
 STRINGTABLE DISCARDABLE 
@@ -437,7 +442,6 @@ BEGIN
     ID_EDIT_FIND            "Trova il testo specificato\nTrova"
     ID_EDIT_PASTE           "Inserisce il contenuto degli Appunti\nIncolla"
     ID_EDIT_REPEAT          "Ripete l'ultima azione\nRipeti"
-    ID_EDIT_REPLACE         "Sostituisce il testo specifico con un testo differente\nSostituisci"
     ID_EDIT_SELECT_ALL      "Seleziona l'intero documento\nSeleziona tutto"
     ID_EDIT_UNDO            "Annulla l'ultima azione\nAnnulla"
     ID_EDIT_REDO            "Ripristina l'azione precedentemente annullata\nRipristina"

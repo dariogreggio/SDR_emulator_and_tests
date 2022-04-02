@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "SDR emulator.h"
 
+#include "sdr emulatorview.h"
 #include "MainFrm.h"
 
 #ifdef _DEBUG
@@ -19,9 +20,9 @@ IMPLEMENT_DYNAMIC(CMainFrame, CMDIFrameWnd)
 
 BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 	//{{AFX_MSG_MAP(CMainFrame)
-		// NOTE - the ClassWizard will add and remove mapping macros here.
-		//    DO NOT EDIT what you see in these blocks of generated code !
 	ON_WM_CREATE()
+	ON_WM_PAINT()
+	ON_WM_MOUSEWHEEL()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -101,4 +102,45 @@ void CMainFrame::Dump(CDumpContext& dc) const
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame message handlers
+
+
+void CMainFrame::OnPaint() {
+	CPaintDC dc(this); // device context for painting
+	
+//	GetActiveView()->Invalidate();
+//	((CSDRemulatorView *)(((CMainFrame *)m_pMainWnd)->GetActiveView()))->Invalidate();
+	
+	// Do not call CMDIFrameWnd::OnPaint() for painting messages
+	}
+
+BOOL CMainFrame::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
+	int incr;
+	
+	if(nFlags & MK_CONTROL) {
+		if(theApp.ModulationType)
+			incr=(zDelta*100)/120;			//120 è fisso, dice
+		if(nFlags & MK_SHIFT)
+			incr *=10;
+		if((int)theApp.Modulation + incr > 0)
+			theApp.Modulation += incr;
+		theApp.OnProvePortantemodulata();
+		}
+	else {
+		incr=(zDelta*1000)/120;			//120 è fisso, dice
+		if(nFlags & MK_SHIFT)
+			incr *=10;
+		if((int)theApp.Frequency + incr > 0)
+			theApp.Frequency += incr;
+/*	if(zDelta>0)
+		Frequency++;
+	else*/
+		theApp.OnProvePortante();
+		}
+	
+
+	theApp.redrawWindows();
+
+
+	return CMDIFrameWnd::OnMouseWheel(nFlags, zDelta, pt);
+	}
 

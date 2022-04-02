@@ -182,6 +182,34 @@ unsigned int CFFT::ReverseBits(unsigned int p_nIndex, unsigned int p_nBits) {
 	return rev;
 	}
 
+unsigned int _fastcall CFFT::subMirror(unsigned int n) {
+	register /*short*/ int i=0;
+  
+/*	_asm {
+		mov ax,word ptr n
+		xor dx,dx
+		mov cx,12
+myLoop:
+		rcr ax,1
+    rcl dx,1
+		loop myLoop
+
+    mov i,dx
+    }*/
+	_asm {
+		mov eax,n
+		xor edx,edx
+		mov ecx,12
+myLoop:
+		rcr eax,1
+    rcl edx,1
+		loop myLoop
+
+    mov i,edx
+    }
+	return i;
+  }
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////
